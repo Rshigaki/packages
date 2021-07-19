@@ -4,13 +4,13 @@
 
 ## Headings
 ---
-# Heading One
+# Heading <color=blue>One</color>
 
-Sint sit cillum pariatur eiusmod nulla pariatur ipsum. Sit laborum anim qui mollit tempor pariatur nisi minim dolor. Aliquip et adipisicing sit sit fugiat commodo id sunt. Nostrud enim ad commodo incididunt cupidatat in ullamco ullamco Lorem cupidatat velit enim et Lorem.
+Saaaaaaa<color=red>int sit cillum</color> pariatur eiusmod nulla pariatur ipsum. <color=yellow>Sit laborum anim qui mollit tempor pariatur</color> nisi minim dolor. Aliquip et adipisicing sit sit fugiat commodo id sunt. Nostrud enim ad commodo incididunt cupidatat in ullamco ullamco Lorem cupidatat velit enim et Lorem.
 
 ## Heading Two
 
-Aute officia nulla deserunt do deserunt cillum velit magna. Officia veniam culpa anim minim dolore labore pariatur voluptate id ad est duis quis velit dolor pariatur enim. Incididunt enim excepteur do veniam consequat culpa do voluptate dolor fugiat ad adipisicing sit.
+Aute officia nulla deserunt do deserunt cillum velit magna. Officia veniam culpa anim <color=blue>minim dolore labore pariatur voluptate</color> id ad est duis quis velit dolor pariatur enim. Incididunt enim excepteur do veniam consequat culpa do voluptate dolor fugiat ad adipisicing sit.
 
 ### Heading Three
 
@@ -38,7 +38,7 @@ Officia irure in non voluptate adipisicing sit amet tempor duis dolore deserunt 
 
 ## Inline Emphasis - Bold and Italic
 ---
-Sint ea do **exercitation** incididunt et minim ad labore sunt. Minim deserunt labore laboris velit nulla incididunt ipsum nulla. **Consequat commodo** reprehenderit duis esse esse ex**ercita**tion minim enim Lorem dolore duis irure. Et ad ipsum labore enim ipsum **cupidatat consequat**. Commodo non ea __cupidatat magna__ deserunt dolore ipsum velit nulla elit veniam nulla eiusmod proident officia.
+Sint ea do **<color=green>exercitation</color>** incididunt et minim ad labore sunt. Minim deserunt labore laboris velit nulla incididunt ipsum nulla. **Consequat commodo** reprehenderit duis esse esse ex**ercita**tion minim enim Lorem dolore duis irure. Et ad ipsum labore enim ipsum **cupidatat consequat**. Commodo non ea __cupidatat magna__ deserunt dolore ipsum velit nulla elit veniam nulla eiusmod proident officia.
 
 *"Proident sit veniam in est proident officia adipisicing"* ea tempor cillum non cillum velit deserunt. Sit tempor ad*ipisic*ing ea laboris anim aute reprehenderit id eu ea. Aute Lorem minim _adipisicing nostrud mollit_ ad ut voluptate do nulla esse occaecat aliqua sint anim.
 

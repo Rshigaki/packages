@@ -5,6 +5,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:markdown/markdown.dart' as md;
+import 'package:path/path.dart';
 
 import '_functions_io.dart' if (dart.library.html) '_functions_web.dart';
 import 'style_sheet.dart';
@@ -274,6 +275,8 @@ class MarkdownBuilder implements md.NodeVisitor {
       return;
     }
 
+    final List<ColoredText>? coloredTexts = getColoredTexts(text.text);
+
     _addParentInlineIfNeeded(_blocks.last.tag);
 
     // Define trim text function to remove spaces from text elements in
@@ -288,6 +291,8 @@ class MarkdownBuilder implements md.NodeVisitor {
       // of text. These spaces are removed in accordance with the Markdown
       // specification on soft line breaks when lines of text are joined.
       final RegExp _softLineBreakPattern = RegExp(r' ?\n *');
+
+      final RegExp _colorTagPattern = RegExp(r'<*>');
 
       // Leading spaces following a hard line break are ignored.
       // https://github.github.com/gfm/#example-657
@@ -322,11 +327,39 @@ class MarkdownBuilder implements md.NodeVisitor {
           recognizer: _linkHandlers.isNotEmpty ? _linkHandlers.last : null,
         ),
         textAlign: _textAlignForBlockTag(_currentBlockTag),
+        coloredTexts: coloredTexts,
       );
     }
     if (child != null) {
       _inlines.last.children.add(child);
     }
+  }
+
+  List<ColoredText>? getColoredTexts(String text) {
+    const String startTagFirst = '<color=';
+    const String startTagLast = '>';
+    const String endTag = '</color>';
+    List<ColoredText>? coloredTexts;
+    while (true) {
+      if (text.contains(startTagFirst)) {
+        coloredTexts ??= [];
+        final int startTagFirstIndex = text.indexOf(startTagFirst);
+        final int startTagLastIndex = text.indexOf(startTagLast);
+        final int endTagIndex = text.indexOf(endTag);
+        final String color = text.substring(
+            startTagFirstIndex + startTagFirst.length, startTagLastIndex);
+        final String coloredText =
+            text.substring(startTagLastIndex, endTagIndex);
+        coloredTexts.add(ColoredText(
+          color,
+          coloredText,
+        ));
+        text = text.substring(endTagIndex + endTag.length);
+      } else {
+        break;
+      }
+    }
+    return coloredTexts;
   }
 
   @override
@@ -742,7 +775,32 @@ class MarkdownBuilder implements md.NodeVisitor {
         : TextSpan(children: mergedSpans);
   }
 
-  Widget _buildRichText(TextSpan? text, {TextAlign? textAlign}) {
+  Widget _buildRichText(TextSpan? text,
+      {TextAlign? textAlign, List<ColoredText>? coloredTexts}) {
+    final Map<String, Color> colorMap = <String, Color>{
+      'red': Colors.red,
+      'blue': Colors.blue,
+      'yellow': Colors.yellow,
+      'black': Colors.black,
+      'transparent': Colors.transparent,
+      'white': Colors.white,
+      'amber': Colors.amber,
+      'blueGrey': Colors.blueGrey,
+      'brown': Colors.brown,
+      'cyan': Colors.cyan,
+      'deepOrange': Colors.deepOrange,
+      'deepPurple': Colors.deepPurple,
+      'green': Colors.green,
+      'grey': Colors.grey,
+      'indigo': Colors.indigo,
+      'lightBlue': Colors.lightBlue,
+      'lightGreen': Colors.lightGreen,
+      'lime': Colors.lime,
+      'orange': Colors.orange,
+      'pink': Colors.pink,
+      'purple': Colors.purple,
+      'teal': Colors.teal,
+    };
     if (selectable) {
       return SelectableText.rich(
         text!,
@@ -751,11 +809,76 @@ class MarkdownBuilder implements md.NodeVisitor {
         onTap: onTapText,
       );
     } else {
-      return RichText(
-        text: text!,
-        textScaleFactor: styleSheet.textScaleFactor!,
-        textAlign: textAlign ?? TextAlign.start,
-      );
+      if (coloredTexts != null) {
+        final List<String> splitedTexts = text!.text!.split(RegExp(r'<.*?>'));
+        List<TextStyle> newStyle = <TextStyle>[];
+        List<TextSpan> newText = <TextSpan>[];
+
+        for (int i = 0; i < coloredTexts.length; i++) {
+          newStyle.add(TextStyle(
+            inherit: text.style!.inherit,
+            color: colorMap[coloredTexts[i].color],
+            backgroundColor: text.style!.backgroundColor,
+            fontSize: text.style!.fontSize,
+            fontWeight: text.style!.fontWeight,
+            fontStyle: text.style!.fontStyle,
+            letterSpacing: text.style!.letterSpacing,
+            wordSpacing: text.style!.wordSpacing,
+            textBaseline: text.style!.textBaseline,
+            height: text.style!.height,
+            leadingDistribution: text.style!.leadingDistribution,
+            locale: text.style!.locale,
+            foreground: text.style!.foreground,
+            background: text.style!.background,
+            shadows: text.style!.shadows,
+            fontFeatures: text.style!.fontFeatures,
+            decoration: text.style!.decoration,
+            decorationColor: text.style!.decorationColor,
+            decorationStyle: text.style!.decorationStyle,
+            decorationThickness: text.style!.decorationThickness,
+            debugLabel: text.style!.debugLabel,
+            fontFamily: text.style!.fontFamily,
+            fontFamilyFallback: text.style!.fontFamilyFallback,
+          ));
+        }
+        int coloredCount = 0;
+        for (int i = 0; i < splitedTexts.length; i++) {
+          newText.add(TextSpan(
+            text: splitedTexts[i],
+            style: i.isEven ? text.style : newStyle[coloredCount],
+            recognizer: text.recognizer,
+            mouseCursor: text.mouseCursor,
+            onEnter: text.onEnter,
+            onExit: text.onExit,
+            semanticsLabel: text.semanticsLabel,
+          ));
+          if (i.isOdd) {
+            coloredCount++;
+          }
+        }
+        return RichText(
+          text: TextSpan(
+            children: newText,
+          ),
+          textScaleFactor: styleSheet.textScaleFactor!,
+          textAlign: textAlign ?? TextAlign.start,
+        );
+      } else {
+        return RichText(
+          text: text!,
+          textScaleFactor: styleSheet.textScaleFactor!,
+          textAlign: textAlign ?? TextAlign.start,
+        );
+      }
     }
   }
+}
+
+class ColoredText {
+  String color;
+  String text;
+  ColoredText(
+    this.color,
+    this.text,
+  );
 }
